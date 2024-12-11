@@ -7,6 +7,7 @@ import './index.css'
 import App from './App.jsx'
 import Navbar from './components/custom/Navbar';
 import Create_trip from './create_trip';
+import View_Trip from './View-trip/[tripId]';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/create-trip",
     element: <Create_trip />
+  },
+  {
+    path: "/view-trip/:id",
+    element: <View_Trip />
   }
 ]);
 

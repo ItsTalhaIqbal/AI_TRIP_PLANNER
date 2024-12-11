@@ -15,6 +15,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios from 'axios';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '@/services/FirebaseConfig'; // Ensure this file has Firebase config
+import { useNavigate } from 'react-router-dom';
 
 const CreateTrip = () => {
   const [location, setLocation] = useState('');
@@ -24,6 +25,7 @@ const CreateTrip = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const navigate=useNavigate()
 
   // Get User Data using Google OAuth
   const getUserData = (tokenInfo) => {
@@ -98,6 +100,7 @@ const CreateTrip = () => {
         id: docId,
       });
       console.log("Data added successfully to Firestore");
+      navigate('/view-trip/'+docId)
     } catch (error) {
       console.error("Error saving data to Firestore:", error);
       setError("Failed to save your trip data. Please try again.");
