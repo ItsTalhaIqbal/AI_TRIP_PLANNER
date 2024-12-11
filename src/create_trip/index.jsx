@@ -8,59 +8,109 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import { FcGoogle } from "react-icons/fc";
+import Logo from '@/components/custom/Logo';
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { doc, setDoc } from 'firebase/firestore';
+import { db } from '@/services/FirebaseConfig'; // Ensure this file has Firebase config
 
-
-
-const Create_trip = () => {
+const CreateTrip = () => {
   const [location, setLocation] = useState('');
   const [days, setDays] = useState('');
   const [budget, setBudget] = useState('');
   const [travelWith, setTravelWith] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [openDialog, setOpenDialoge] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false);
 
+  // Get User Data using Google OAuth
+  const getUserData = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`, {
+      headers: {
+        Authorization: `Bearer ${tokenInfo?.access_token}`,
+        Accept: 'application/json',
+      },
+    })
+      .then((resp) => {
+        localStorage.setItem("User", JSON.stringify(resp.data)); // Store user in localStorage
+        setOpenDialog(false);
+        setError('');
+        generatePlan();
+      })
+      .catch((err) => {
+        console.error("Error fetching user data:", err);
+        setError("Failed to retrieve user data. Please try again.");
+      });
+  };
 
+  const login = useGoogleLogin({
+    onSuccess: (response) => getUserData(response),
+    onError: (error) => console.error(error),
+  });
+
+  // Function to generate the trip plan
   const generatePlan = async () => {
-
-    const User = localStorage.getItem("User")
-    if (!User) {
-      setOpenDialoge(true)
+    if (!location || !days || !budget || !travelWith || isNaN(days) || days <= 0) {
+      setError('Please fill in all the travel details correctly!');
       return;
     }
 
-    if (!location || !days || !budget || !travelWith) {
-      setError('Please fill in all the travel details!');
-      return false;
+    const user = localStorage.getItem("User");
+    if (!user) {
+      setOpenDialog(true); // If no user, prompt for login
+      return;
     }
+
     const finalPrompt = prompt
       .replace("{location}", location)
       .replace("{days}", days)
       .replace("{travelwith}", travelWith)
-      .replace("{budget}", budget)
-      .replace("{days}", days)
+      .replace("{budget}", budget);
 
     setLoading(true);
-    console.log(finalPrompt);
     try {
-      const result = await chatSession.sendMessage(finalPrompt);
-      console.log(result?.response?.text())
-      setLocation('');
-      setDays('');
-      setBudget('');
-      setTravelWith('');
-      setLoading(false);
-
+      const result = await chatSession.sendMessage(finalPrompt); // Send the prompt to AI for generating a plan
+       saveGeneratedData(result?.response?.text());
+      resetForm();
     } catch (error) {
-      console.log("error :", error);
-
+      console.error("Error generating plan:", error);
+      setError("Failed to generate the plan. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
   };
 
+  // Function to save generated data to Firebase Firestore
+  const saveGeneratedData = async (tripData) => {
+    const formData = { location, days, budget, travelWith };
+    const docId = Date.now().toString(); // Unique document ID based on the timestamp
+    const user = JSON.parse(localStorage.getItem("User"));
+
+    try {
+      // Ensure the Firestore instance is correctly initialized
+      const docRef = doc(db, "AITrips", docId);
+      await setDoc(docRef, {
+        userSelection: formData,
+        tripData:JSON.parse(tripData),
+        userEmail: user?.email,
+        id: docId,
+      });
+      console.log("Data added successfully to Firestore");
+    } catch (error) {
+      console.error("Error saving data to Firestore:", error);
+      setError("Failed to save your trip data. Please try again.");
+    }
+  };
+
+  // Function to reset the form fields
+  const resetForm = () => {
+    setLocation('');
+    setDays(0);
+    setBudget('');
+    setTravelWith('');
+  };
 
   return (
     <div className="max-w-[1300px] mx-auto px-6 mt-10">
@@ -143,9 +193,8 @@ const Create_trip = () => {
           </Button>
         </div>
       </div>
-      <Dialog open={openDialog} onOpenChange={setOpenDialoge}>
-        <DialogTrigger asChild>
-        </DialogTrigger>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+       
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Please Sign In</DialogTitle>
@@ -165,4 +214,4 @@ const Create_trip = () => {
   );
 };
 
-export default Create_trip;
+export default CreateTrip;
