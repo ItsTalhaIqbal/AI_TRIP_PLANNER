@@ -202,8 +202,11 @@ const CreateTrip = () => {
           <DialogHeader>
             <DialogTitle>Please Sign In</DialogTitle>
             <DialogDescription>
-              <p>Please sign in to continue with Ocean</p>
-              <Button className="w-full mt-5 flex gap-3">
+              <span>Please sign in to continue with Ocean</span>
+              <Button
+                onClick={login}
+              
+              className="w-full mt-5 flex gap-3">
                 <FcGoogle className="w-10 h-10" />
                 Sign In With Google
               </Button>

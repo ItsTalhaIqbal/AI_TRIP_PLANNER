@@ -1,16 +1,16 @@
 import React from 'react'
 
 const DailyPlans = ({ trip }) => {
-    console.log("Data",trip?.tripData?.travelPlan?.itinerary
+    // console.log("Data",trip?.tripData?.travelPlan?.itinerary);
 
 
-    );
+    
     
     return (
         <div>
             <h2>Places to Visit</h2>
 
-            <div>
+            {/* <div>
                 {
                    trip?.tripData?.travelPlan?.itinerary.map((item, index) => (
                         <div>
@@ -24,8 +24,8 @@ const DailyPlans = ({ trip }) => {
                     ))
 
 
-                }
-            </div>
+                } 
+            </div>*/}
 
         </div>
     )
