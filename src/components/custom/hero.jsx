@@ -17,7 +17,7 @@ const Hero = () => {
                 </Button>
             </Link>
             <img 
-                src="/public/landing.png" 
+                src="@public/landing.png" 
                 alt="Landing img" 
                 className="w-full max-w-sm sm:max-w-2xl lg:max-w-4xl -mt-[20px] object-contain" 
             />
