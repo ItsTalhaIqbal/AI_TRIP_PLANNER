@@ -3,7 +3,6 @@ import React from 'react';
 import { IoIosSend } from "react-icons/io";
 
 const InfoSection = ({ trip }) => {
-    console.log(trip?.userSelection?.location);
 
     return (
         <div>

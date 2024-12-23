@@ -6,7 +6,6 @@ import { Button } from './components/ui/button'
 import Hero from './components/custom/hero'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <div className="max-w-[1300px] mx-auto ">

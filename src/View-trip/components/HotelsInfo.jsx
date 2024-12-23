@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const HotelsInfo = ({ trip }) => {
-    console.log(trip);
 
     return (
         <div>
