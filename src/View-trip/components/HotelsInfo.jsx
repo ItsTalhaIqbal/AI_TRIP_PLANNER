@@ -10,7 +10,6 @@ const HotelsInfo = ({ trip }) => {
                 {
                     trip?.tripData?.travelPlan?.hotels?.map((hotel, index) => (
                         <Link 
-                            key={index} 
                             to={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + hotel.area)}`} 
                             target="_blank" 
                             rel="noopener noreferrer" 
